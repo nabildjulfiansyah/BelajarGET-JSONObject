@@ -1,39 +1,59 @@
 package testing.belajar.belajarget.activity
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
-import com.androidnetworking.interfaces.JSONArrayRequestListener
-import kotlinx.android.synthetic.main.activity_get.*
-import org.json.JSONArray
+import com.androidnetworking.interfaces.JSONObjectRequestListener
+import org.json.JSONException
+import org.json.JSONObject
 import testing.belajar.belajarget.R
 
 class GETActivity : AppCompatActivity() {
+
+    private lateinit var tvUserId : TextView
+    private lateinit var tvId : TextView
+    private lateinit var tvTitle : TextView
+    private lateinit var tvBody : TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_get)
 
-        data(tvTitle.text.toString(), tvBody.text.toString())
+        tvUserId = findViewById(R.id.tvUserId)
+        tvId = findViewById(R.id.tvId)
+        tvTitle = findViewById(R.id.tvTitle)
+        tvBody = findViewById(R.id.tvBody)
+
+        data()
+
     }
 
-    private fun data(title: String, body: String) {
-        AndroidNetworking.get("https://jsonplaceholder.typicode.com/posts")
-            .addPathParameter("title", title)
-            .addPathParameter("body", body)
+    private fun data() {
+        AndroidNetworking.get("https://jsonplaceholder.typicode.com/posts/1")
             .setTag("GET")
             .setPriority(Priority.MEDIUM)
             .build()
-            .getAsJSONArray(object : JSONArrayRequestListener {
-                override fun onResponse(response: JSONArray) {
-                    Log.d("Attention!", "onResponse: $response")
+            .getAsJSONObject(object : JSONObjectRequestListener {
+                override fun onResponse(response: JSONObject?) {
+                    Toast.makeText(this@GETActivity, "sukses", Toast.LENGTH_LONG).show()
+                    try {
+                        val jsonGet = JSONObject(response.toString())
 
+                        tvUserId.text = jsonGet.getInt("userId").toString()
+                        tvId.text = jsonGet.getInt("id").toString()
+                        tvTitle.text = jsonGet.getString("title")
+                        tvBody.text = jsonGet.getString("body")
+                    } catch (e : JSONException){
+                        e.printStackTrace()
+                    }
                 }
 
                 override fun onError(anError: ANError?) {
-
+                    Toast.makeText(this@GETActivity, "Gagal", Toast.LENGTH_LONG).show()
                 }
             })
     }
