@@ -38,15 +38,13 @@ class GETActivity : AppCompatActivity() {
             .setPriority(Priority.MEDIUM)
             .build()
             .getAsJSONObject(object : JSONObjectRequestListener {
-                override fun onResponse(response: JSONObject?) {
+                override fun onResponse(response: JSONObject) {
                     Toast.makeText(this@GETActivity, "sukses", Toast.LENGTH_LONG).show()
                     try {
-                        val jsonGet = JSONObject(response.toString())
-
-                        tvUserId.text = jsonGet.getInt("userId").toString()
-                        tvId.text = jsonGet.getInt("id").toString()
-                        tvTitle.text = jsonGet.getString("title")
-                        tvBody.text = jsonGet.getString("body")
+                        tvUserId.text = response.getInt("userId").toString()
+                        tvId.text = response.getInt("id").toString()
+                        tvTitle.text = response.getString("title")
+                        tvBody.text = response.getString("body")
                     } catch (e : JSONException){
                         e.printStackTrace()
                     }
